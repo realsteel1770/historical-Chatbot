@@ -1,7 +1,5 @@
-Project Title: Historical AI Chatbot – Neil Armstrong Edition.
+Retrieval-Augmented Generation (RAG): Uses @xenova/transformers for local embeddings to ensure accurate historical responses.
 
-The "Why": Explain that this is a RAG (Retrieval-Augmented Generation) application designed to educate students about space history.
+AI Persona: Integrated Google Gemini Flash with custom system prompting to maintain a humble, educational tone.
 
-Tech Stack: Mention React, Node.js, Express, and Google Gemini Flash.
-
-Key Features: List the custom knowledge base, vector search for exact historical facts, and the text-to-speech accessibility feature.
+Accessibility Features: Custom Text-to-Speech engine and four accessibility-focused UI themes.
