@@ -1,13 +1,6 @@
 # Security
 .env
 
-# Environments
-.env.local
-.env.*.local
-
-# Replit / Local state
-.local/
-
 # Logs
 logs
 *.log
