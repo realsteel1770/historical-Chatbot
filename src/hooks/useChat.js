@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { speakText } from "../TextToSpeech";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
+
 export function useChat() {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +15,7 @@ export function useChat() {
     setMessages(prev => [...prev, { sender: "user", text: userText }]);
 
     try {
-      const response = await fetch("http://localhost:3001/chat", {
+      const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: userText }),
