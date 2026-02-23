@@ -1,147 +1,87 @@
-import { useState, useEffect } from "react"; 
-import "./index.css"; // Global CSS styles
-import Sidebar from "./sidebar.jsx"; // Sidebar component
-import { speakText } from "./TextToSpeech"; // Text-to-speech helper
-import "./design/theme.css";
+import { useState, useRef } from "react";
+import { useChat } from "./hooks/useChat";
+import { Sidebar } from "./components/Sidebar";
+import { Header } from "./components/Header";
+import { ChatMessage } from "./components/ChatMessage";
+import { TypingIndicator } from "./components/TypingIndicator";
+import { EmptyState } from "./components/EmptyState";
+import { InputArea } from "./components/InputArea";
+import { THEMES } from "./data/chatData";
 
-export default function ChatBox() {
-  const [message, setMessage] = useState(""); // Current input value
-  const [messages, setMessages] = useState([]); // List of chat messages
-  const [themeIndex, setThemeIndex] = useState(0); // Current theme index
+export default function App() {
+  const { messages, isLoading, handleSend, handleReadLast, downloadChat } = useChat();
+  const [themeIndex, setThemeIndex] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const messagesEndRef = useRef(null);
+  const theme = THEMES[themeIndex];
 
-  // Toggle between 4 themes (Colourblind mode)
   function toggleTheme() {
-    setThemeIndex(prev => (prev + 1) % 4); 
+    setThemeIndex(prev => (prev + 1) % THEMES.length);
   }
-
-  // Update body class when theme changes
-  useEffect(() => {
-    document.body.className = `theme-${themeIndex}`;
-  }, [themeIndex]);
-
-  // Update message state as user types
-  function handleChange(e) {
-    setMessage(e.target.value);
-  }
-
-  // Handle sending a message
-  async function handleSend() {
-    if (message.trim() === "") return; // Ignore empty messages
- 
-    const userText = message; // Save current message
-    setMessage(""); // Clear input
- 
-    // Adds user message to chat 
-    setMessages(prev => [...prev, { sender: "user", text: " " + userText }]);
- 
-    try {
-      // Sends message to backend
-      const response = await fetch('http://localhost:3001/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: userText })
-      });
- 
-      const data = await response.json();
-     
-      // Adds response from Neil to chat
-      setMessages(prev => [...prev, { sender: "neil", text: data.reply }]);
-
-      // Shows error when no good response can be given
-    } catch (error) { 
-      console.error(error);
-      setMessages(prev => [...prev, "System: Connection Error"]); 
-    }
-  }
-
-  // Text-to-speech / Accessibility feature
-  function handleReadLastMessage() {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]; 
-      speakText(lastMessage.text);
-    } else {
-      speakText("There are no messages to read.");
-    }
-  }
-
-    // Download chat history as a text file
-  function downloadConversationAsTxt(conversation) {
-    if (!conversation || conversation.length === 0) {
-      alert("No conversation to download yet."); // Stop if no messages
-      return;
-    }
-
-    // Convert messages to text lines
-    const textContent = conversation
-      .map(msg => {
-        if (!msg?.text) return ""; // Skip empty messages
-        const sender = msg.sender === "user" ? "User" : msg.sender === "neil" ? "Neil Armstrong" : "System";
-        return `${sender}: ${msg.text.trim()}`; // Format each message
-      })
-      .filter(line => line !== "") // Remove empty lines
-      .join("\n"); // Join lines with newlines
-
-    if (!textContent) {
-      alert("No conversation to download yet."); // Stop if all messages were empty
-      return;
-    }
-
-    // Create a file and trigger download
-    const blob = new Blob([textContent], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "conversation.txt"; // Set file name
-    a.click(); // Start download
-
-    URL.revokeObjectURL(url); // Clean up
-  }
-
-  
 
   return (
-    <div className="app-container">
-      <Sidebar
-        onNewChat={() => window.location.reload()} // Starts new chat
-        onReadLast={handleReadLastMessage} // Reads last message
-        onToggleTheme={toggleTheme} // Switch theme
-        themeIndex={themeIndex} 
-        conversation={messages}
-        onDownloadConversation={downloadConversationAsTxt} // Download chat
-      />
-  
-      <div className="chat-container">
-        <header><h1>Ask Neil Armstrong a Question!</h1></header>
-        <div className="chatbox" aria-live="polite">
-          {/* Display chat messages */}
-          {messages.map((msg, i) => (
-            <div key={i} className="message">
-              <strong>{msg.sender === "user" ? "User" : "Neil Armstrong"}:</strong>
-              {msg.text}
-            </div>
-          ))}
-  
-          <label htmlFor="Input" className="sr-only">Type your message</label>
-  
-          {/* Message input */}
-          <input
-            id="Input"
-            type="text"
-            value={message}
-            onChange={handleChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend(); // Send message on Enter
-              }
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: ${theme.bg}; color: ${theme.text}; font-family: 'IBM Plex Mono', monospace; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+      `}</style>
+
+      {/* Starfield */}
+      <div aria-hidden="true" style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        backgroundImage: `
+          radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+          radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+          radial-gradient(1.5px 1.5px at 50% 8%, rgba(255,255,255,0.7) 0%, transparent 100%),
+          radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+          radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+          radial-gradient(2px 2px at 90% 10%, rgba(255,255,255,0.8) 0%, transparent 100%),
+          radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.5) 0%, transparent 100%)
+        `,
+      }} />
+
+      <div style={{ display: "flex", height: "100vh", position: "relative", zIndex: 1 }}>
+        <Sidebar
+          theme={theme}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onReadLast={handleReadLast}
+          onDownload={downloadChat}
+          onToggleTheme={toggleTheme}
+        />
+
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
+          <Header onOpenSidebar={() => setSidebarOpen(true)} />
+
+          <div
+            role="log"
+            aria-live="polite"
+            aria-label="Conversation"
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: 24,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              scrollbarWidth: "thin",
+              scrollbarColor: `${theme.accent}33 transparent`,
             }}
-            placeholder="Type your message..." // What User sees
-          />
-          {/*Sends Message when Clicked*/}
-          <button onClick={handleSend}>Send</button> 
-        </div>
+          >
+            {messages.length === 0 && !isLoading
+              ? <EmptyState onSuggest={handleSend} />
+              : messages.map((msg, i) => <ChatMessage key={i} msg={msg} />)
+            }
+            {isLoading && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <InputArea onSend={handleSend} isLoading={isLoading} />
+        </main>
       </div>
-    </div>
-  );   
+    </>
+  );
 }
