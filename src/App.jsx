@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"; 
-import "./design/globals.css"; // Global CSS styles
+import "./index.css"; // Global CSS styles
 import Sidebar from "./sidebar.jsx"; // Sidebar component
 import { speakText } from "./TextToSpeech"; // Text-to-speech helper
+import "@/design/theme.css";
 
 export default function ChatBox() {
   const [message, setMessage] = useState(""); // Current input value
