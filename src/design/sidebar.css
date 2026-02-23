@@ -1,0 +1,132 @@
+:root {
+    /* Default colors and fonts */
+    --color-bg: #040345;
+    --color-surface: #0b0b4b;
+    --color-text: #dedede;
+    --color-accent: #10a37f;
+
+    /* Sidebar color */
+    --color-sidebar: #04033b;
+
+    /* Border radius and font */
+    --radius-md: 12px;
+    --font-family: 'Inter', system-ui, sans-serif;
+
+    /* Sidebar button colors */
+    --sidebar-btn-bg: #0b0b4b;
+    --sidebar-btn-text: #ffffff;
+    --sidebar-btn-hover: #148268;
+}
+
+#sidebar {
+    /* Sidebar container */
+    width: 250px;
+    height: 100vh;
+    background: #1e1e1e;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-container { 
+    /* Sidebar inner container */
+    background-color: var(--color-sidebar);
+    width: 250px;              
+    height: 100vh;             
+    display: flex;
+    flex-direction: column;
+    align-items: center;       
+    padding-top: 20px;
+    box-sizing: border-box;
+    position: fixed;           
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    flex-shrink: 0;
+}  
+
+.profile-image {
+    /* Neil Armstrong Dimensions */
+    width: 180px;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 40px;      
+    border: 2px solid #222;   
+}
+
+.button-container {
+    /* Container for sidebar buttons */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;                
+    width: 100%;
+}
+
+.sidebar-btn {
+    /* Sidebar button styling */
+    background-color: var(--sidebar-btn-bg);
+    color: var(--sidebar-btn-text);
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-btn:hover {
+    /* Hover effect for buttons */
+    background-color: var(--sidebar-btn-hover);
+}
+
+.sidebar-body.theme-0 {
+    /* Dark theme for sidebar body */
+    background-color: #04033b;
+
+    --sidebar-btn-bg: #0b0b4b;
+    --sidebar-btn-text: #ffffff;
+    --sidebar-btn-hover: #148268;
+}
+
+body.theme-1 {
+    /* Light theme 1 */
+    --color-bg: #fdfdfd;
+    --color-surface: #eaeaea;
+    --color-text: #1a1a1a;
+    --color-accent: #e69f00;
+
+    --color-sidebar: #dddddd;
+
+    --sidebar-btn-bg: #eaeaea;
+    --sidebar-btn-text: #1a1a1a;
+    --sidebar-btn-hover: #d6d6d6;
+}
+
+body.theme-2 {
+    /* Light yellow theme 2 */
+    --color-bg: #fffbea;
+    --color-surface: #f6f2c2;
+    --color-text: #111111;
+    --color-accent: #009e73;
+
+    --color-sidebar: #f0e68c;
+
+    --sidebar-btn-bg: #f6f2c2;
+    --sidebar-btn-text: #111111;
+    --sidebar-btn-hover: #e5dc9c;
+}
+
+body.theme-3 {
+    /* Dark theme 3 */
+    --color-bg: #000000;
+    --color-surface: #222222;
+    --color-text: #ffffff;
+    --color-accent: #ffdd33;
+
+    --color-sidebar: #111111;
+
+    --sidebar-btn-bg: #222222;
+    --sidebar-btn-text: #ffffff;
+    --sidebar-btn-hover: #333333;
+}
